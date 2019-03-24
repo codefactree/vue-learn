@@ -26,13 +26,13 @@
               </div>
               <!-- /.box-header -->
               <!-- form start -->
-              <form @submit.prevent="submit" class="form-horizontal col-md-offset-1">
+              <form @submit.prevent = "submit" class="form-horizontal col-md-offset-1">
                 <div class="box-body">
                   <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Name</label>
 
                     <div class="col-sm-7">
-                      <input type="text" class="form-control" id="name" placeholder="Name" v-model = "user.name">
+                      <input type="text" class="form-control" id="name" placeholder="Name" v-model= "user.name">
                     </div>
                   </div>
 
@@ -43,20 +43,11 @@
                       <input type="email" class="form-control" id="email" placeholder="Email" v-model = "user.email">
                     </div>
                   </div>
-
-                  <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
-
-                    <div class="col-sm-7">
-                      <input type="password" class="form-control" id="password" placeholder="password" v-model = "user.password">
-                    </div>
-                  </div>
-
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer">
                   <router-link to = "/user" class="btn btn-danger col-md-offset-4">Cancel</router-link>
-                  <button type="submit" class="btn btn-info" style="margin-left: 1em">Save</button>
+                  <button type="submit" class="btn btn-info" style="margin-left: 1em">Update</button>
                 </div>
                 <!-- /.box-footer -->
               </form>
@@ -73,29 +64,32 @@
 
 <script>
     export default{
-        data(){
+        data () {
             return {
                 user: {
-                    name: "",
-                    email: "",
-                    password: ""
+                    name : "",
+                    email: ""
                 }
             }
         },
-        methods: {
+        created () {
+            this.$http.get('http://localhost:8000/api/user/'+ this.$route.params.id)
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                this.user.name = data.name;
+                this.user.email = data.email;
+            })
+        },
+        methods : {
             submit() {
-                const formData = {
-                    email : this.user.email,
-                    name : this.user.name,
-                    password : this.user.password
-                }
-                console.log(formData)
-                this.$http.post('http://localhost:8000/api/user', formData)
+                this.$http.put('http://localhost:8000/api/user/'+ this.$route.params.id, this.user)
                 .then(() => {
                     this.$router.push('/user');
-                }, error => {
+                }, error =>{
                     console.log(error);
-                })
+                });
             }
         }
     }

@@ -39,14 +39,16 @@
                   </tr>
               </thead>
               <tbody>
-                <tr>
-                    <td><a href="pages/examples/invoice.html">1</a></td>
-                    <td>Call of Duty IV</td>
-                    <td><span class="label label-success">Shipped</span></td>
+                <tr v-for = "(user, key) in users" :key = "user.email">
+                    <td><a href="pages/examples/invoice.html">{{ key }} </a></td>
+                    <td> {{ user.name }} </td>
+                    <td> {{ user.email }} </td>
                     <td><span class="label label-success">Shipped</span></td>
                     <td>
-                        <button type="button" class="btn btn-box-tool"><i class="fa fa-edit"></i></button>
-                        <button type="button" class="btn btn-box-tool"><i class="fa fa-trash"></i></button>
+                        <router-link :to="'/user/'+ user.id + '/edit'" class="btn btn-box-tool"><i class="fa fa-edit"></i></router-link>
+                        <form @submit.prevent = "deleteUser(user.id)">
+                            <button type="submit" class="btn btn-box-tool"><i class="fa fa-trash"></i> </button>
+                        </form>
                     </td>
                 </tr>
             </tbody>
@@ -68,6 +70,29 @@
 
 <script>
     export default{
+        data () {
+            return {
+              users: []
+          }
+      },
+      mounted(){
+        this.$http.get('http://localhost:8000/api/user')
+        .then( response => {
+          return response.json();
+        })
+        .then( data => {
+            this.users = data;
+        });
+    },
+    methods : {
+        deleteUser(id){
+            this.$http.delete('http://localhost:8000/api/user/'+id)
+            .then(() => {
+                this.$router.go();
+            })
 
+        }
     }
+}
+
 </script>
